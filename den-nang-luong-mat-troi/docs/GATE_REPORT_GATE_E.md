@@ -1,0 +1,21 @@
+# GATE REPORT — GATE E (CƠ SỞ DỮ LIỆU & BẢO MẬT ROW LEVEL SECURITY)
+
+- **Dự án / Môi trường**: SOLAR LIGHT (Cửa Hàng Đèn Năng Lượng Mặt Trời) | Cơ Sở Dữ Liệu PostgreSQL
+- **Commit SHA / Phiên bản**: Hoàn thiện Lát Cắt 4 (Database Schema & RLS Policies)
+- **Mục tiêu Gate E (CỔNG CỨNG)**: 
+  - Thiết kế Schema 4 bảng chuẩn hóa: `products`, `orders`, `order_items`, `user_roles`.
+  - Cấu hình phân quyền tối thiểu `GRANT` và kích hoạt `ROW LEVEL SECURITY` 100% trên toàn bộ các bảng ngay từ migration đầu tiên.
+  - Viết bộ test SQL ma trận quyền kiểm thử allow/deny cho các vai trò (Anon, Authenticated, Admin).
+- **Hạng mục đã hoàn thành**:
+  - [x] Tạo file migration [`supabase/migrations/20261009000000_init_solar_light_schema.sql`](file:///d:/AI-03/den-nang-luong-mat-troi/supabase/migrations/20261009000000_init_solar_light_schema.sql).
+  - [x] Thu hồi toàn bộ quyền công khai thừa (`REVOKE ALL FROM PUBLIC`).
+  - [x] Kích hoạt RLS trên cả 4 bảng (`ENABLE ROW LEVEL SECURITY`).
+  - [x] Thiết lập chính sách bảo vệ dữ liệu khách: Anon chỉ được xem sản phẩm và tạo đơn hàng mới; cấm Anon đọc danh sách đơn hàng để chống cào số điện thoại khách hàng.
+  - [x] Tạo bộ test SQL [`supabase/tests/rls_test.sql`](file:///d:/AI-03/den-nang-luong-mat-troi/supabase/tests/rls_test.sql) kiểm thử 5 kịch bản phân quyền.
+- **Bằng chứng Bảo Mật & Phân Quyền**:
+  - Test 1 (Anon SELECT products): ALLOW (Thấy danh sách đèn công khai).
+  - Test 2 (Anon SELECT orders): DENY (Trả về 0 dòng - bảo vệ PII khách hàng).
+  - Test 3 (Anon INSERT order): ALLOW (Cho phép khách đặt hàng không cần login).
+  - Test 4 (Customer UPDATE product price): DENY (Chặn người dùng sửa giá đèn).
+  - Test 5 (Admin SELECT & UPDATE orders): ALLOW (Admin xem và đổi trạng thái đơn).
+- **Trạng thái đề xuất**: **PASS (Đạt chuẩn an ninh CSDL sớm - Security Shift-Left)**.

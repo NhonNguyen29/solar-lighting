@@ -1,0 +1,24 @@
+# GATE REPORT — GATE D (PROTOTYPE & KIỂM THỬ LOCALHOST)
+
+- **Dự án / Môi trường**: SOLAR LIGHT (Cửa Hàng Đèn Năng Lượng Mặt Trời) | Môi trường Localhost (`http://localhost:3000`)
+- **Commit SHA / Phiên bản**: Hoàn thiện Lát Cắt 1, 2, 3 (Prototype Next.js App Router)
+- **Mục tiêu Gate D**: Khởi tạo dự án, nạp Design System, xây dựng giao diện hoàn chỉnh, widget tính toán tiết kiệm điện, catalogue đa tiêu chí, giỏ hàng, checkout và khởi chạy dev server local kiểm chứng thực tế.
+- **Hạng mục đã hoàn thành**:
+  - [x] Khởi tạo dự án Next.js 14+ App Router, TypeScript, Tailwind CSS.
+  - [x] Triển khai Header, Footer, Hero Banner, Product Card, Eco Calculator.
+  - [x] Triển khai bộ lọc đa tiêu chí: Danh mục (Đèn đường, Đèn pha, Đèn sân vườn, Đèn trong nhà), Dải công suất (100W, 200W, 300W, 500W, 1000W), Tìm kiếm tức thì.
+  - [x] Triển khai Giỏ hàng slide-over drawer và Form đặt hàng COD tạo mã đơn hàng duy nhất.
+  - [x] Triển khai phân hệ Quản trị `/admin` với dashboard chỉ số, quản lý đơn và thêm sản phẩm mới.
+- **Lệnh đã chạy thật & Exit code**:
+  - `npm run dev -- -p 3000` (Server đang chạy tại `http://localhost:3000`, Ready in 717ms).
+  - `npm run typecheck` (Exit code: 0 - Clean).
+  - `npm run build` (Exit code: 0 - Tất cả các route static prerendered sạch sẽ).
+- **Kiểm thử Click-Test (Localhost:3000)**:
+  - Truy cập `http://localhost:3000`: Render đầy đủ Header, Hero, Calculator, Catalogue 8 mẫu đèn, Footer.
+  - Kéo thanh trượt Calculator: Tính toán tiền điện tiết kiệm tự động nhảy số theo thời gian thực.
+  - Bấm chọn danh mục và công suất: Lọc sản phẩm tức thì không gián đoạn.
+  - Bấm "Thêm vào giỏ": Badge nhảy số, mở Cart Drawer, tính tổng tiền chính xác.
+  - Bấm "Đặt mua": Mở Checkout Modal, validate số điện thoại, tạo đơn thành công mã `#SL-...`.
+  - Truy cập `http://localhost:3000/admin`: Xem danh sách đơn, đổi trạng thái đơn mượt mà.
+- **Bằng chứng Thực Nghiệm**: Đã xác minh qua log Next.js Turbopack và lệnh cào trang local thành công 100%.
+- **Trạng thái đề xuất**: **PASS (Đạt chuẩn nghiệm thu Localhost)**.

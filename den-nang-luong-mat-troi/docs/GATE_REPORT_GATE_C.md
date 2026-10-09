@@ -1,0 +1,24 @@
+# GATE REPORT — GATE C (KIẾN TRÚC, THREAT MODEL & KẾ HOẠCH TRIỂN KHAI)
+
+- **Dự án / Môi trường**: SOLAR LIGHT (Cửa Hàng Đèn Năng Lượng Mặt Trời) | Giai đoạn G1 & G2 (Thiết kế & Kiến trúc)
+- **Commit SHA / Phiên bản**: Hoàn thiện hồ sơ Kiến trúc & UX V1.0-beta
+- **Mục tiêu Gate C (CỔNG CỨNG)**: 
+  - Hoàn thiện toàn bộ hồ sơ thiết kế trải nghiệm người dùng (UX Spec, Design System).
+  - Hoàn thiện hồ sơ kiến trúc kỹ thuật (Architecture Design), mô hình đe dọa an ninh (Threat Model) và ma trận phân quyền (Permission Matrix).
+  - Xác lập lộ trình 5 lát cắt dọc (Implementation Plan).
+  - **Trình Product Owner phê duyệt kiến trúc và kế hoạch trước khi viết code quan trọng**.
+- **Hạng mục đã hoàn thành**:
+  - [x] Lập hồ sơ `UX_SPEC.md` với đầy đủ sitemap, 3 luồng hành trình người dùng và quy chuẩn 6 trạng thái UX bắt buộc.
+  - [x] Lập hồ sơ `DESIGN_SYSTEM.md` với hệ màu Eco-Tech (Emerald Green & Solar Amber), Google Fonts (Outfit & Inter), hệ thống spacing, radius và hiệu ứng ánh sáng năng lượng mặt trời.
+  - [x] Lập hồ sơ `ARCHITECTURE.md` với sơ đồ kiến trúc 3 vùng tin cậy, đặc tả chi tiết Schema 4 bảng (`products`, `orders`, `order_items`, `user_roles`) và các quyết định kiến trúc ADR.
+  - [x] Lập hồ sơ `THREAT_MODEL.md` nhận diện các vectơ tấn công (chống IDOR, chống sửa giá, chống lộ secret, chống cào dữ liệu SĐT khách).
+  - [x] Lập hồ sơ `PERMISSION_MATRIX.md` quy định ma trận phân quyền chi tiết (Default Deny).
+  - [x] Lập hồ sơ `IMPLEMENTATION_PLAN.md` chia nhỏ thành 5 lát cắt dọc khép kín.
+- **Hạng mục chưa hoàn thành**: Chưa bắt đầu viết code (tuân thủ nguyên tắc Plan-First).
+- **Lệnh đã chạy thật & Exit code**: Chưa chạy code (Giai đoạn hoàn thiện hồ sơ thiết kế).
+- **Kiểm thử Click-Test (Local/Staging)**: Chưa áp dụng (G2).
+- **Bằng chứng Bảo mật & Phân quyền**: Đã quy định rõ ràng trong `THREAT_MODEL.md` và `PERMISSION_MATRIX.md`.
+- **Rủi ro còn lại & Kế hoạch Rollback**: Không có rủi ro kỹ thuật ở giai đoạn tài liệu.
+- **Quyết định cần Product Owner phê duyệt**:
+  - Phê duyệt toàn bộ hồ sơ Kiến trúc và Lộ trình 5 Lát cắt dọc để chính thức mở cổng sang **Giai đoạn G3: Triển khai Lát Cắt 1 & Khởi chạy Localhost**.
+- **Trạng thái đề xuất**: **PASS (Chờ Product Owner phê duyệt CỔNG CỨNG GATE C)**.
