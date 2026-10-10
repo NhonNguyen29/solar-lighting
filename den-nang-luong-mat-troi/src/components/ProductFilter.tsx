@@ -10,6 +10,7 @@ interface ProductFilterProps {
   onChangeFilter: (newFilter: Partial<FilterState>) => void;
   onReset: () => void;
   totalResults: number;
+  categories?: { id: string; name: string }[];
 }
 
 export default function ProductFilter({
@@ -17,7 +18,10 @@ export default function ProductFilter({
   onChangeFilter,
   onReset,
   totalResults,
+  categories = CATEGORIES,
 }: ProductFilterProps) {
+  const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;
+
   return (
     <div className="space-y-6 p-6 rounded-3xl bg-[#132226] border border-[#26434b]">
       {/* Top Search Input & Result Count */}
@@ -84,7 +88,7 @@ export default function ProductFilter({
           Danh Mục Đèn:
         </label>
         <div className="flex flex-wrap gap-2">
-          {CATEGORIES.map((cat) => (
+          {activeCategories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => onChangeFilter({ category: cat.id })}

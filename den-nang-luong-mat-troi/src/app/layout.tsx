@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
+import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
   title: 'SOLAR LIGHT — Cửa Hàng & Catalogue Đèn Năng Lượng Mặt Trời',
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="vi" className="scroll-smooth">
       <body className="min-h-screen bg-[#0b1315] text-[#f8fafc] antialiased selection:bg-emerald-500 selection:text-white">
-        <CartProvider>{children}</CartProvider>
+        <AuthProvider>
+          <CartProvider>{children}</CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

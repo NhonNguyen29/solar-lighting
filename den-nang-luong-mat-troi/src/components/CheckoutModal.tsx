@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { saveNewOrder } from '@/lib/storage';
+import { createOrderInSupabase } from '@/lib/supabaseProducts';
 import { Order, OrderItem } from '@/types';
 import { 
   X, 
@@ -28,6 +30,7 @@ export default function CheckoutModal({
   onOrderSuccess,
 }: CheckoutModalProps) {
   const { items, totalAmount, clearCart } = useCart();
+  const { user, profile } = useAuth();
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -38,13 +41,22 @@ export default function CheckoutModal({
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Tự động điền thông tin nếu khách hàng đã đăng nhập tài khoản Supabase
+  useEffect(() => {
+    if (isOpen && user) {
+      if (profile?.fullName && !customerName) setCustomerName(profile.fullName);
+      if (user.email && !customerEmail) setCustomerEmail(user.email);
+      if (profile?.phone && !customerPhone) setCustomerPhone(profile.phone);
+    }
+  }, [isOpen, user, profile]);
+
   if (!isOpen) return null;
 
   const formatVnd = (num: number) => {
     return new Intl.NumberFormat('vi-VN').format(num) + ' ₫';
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
 
@@ -72,11 +84,10 @@ export default function CheckoutModal({
     setIsSubmitting(true);
 
     try {
-      // Tạo mã đơn hàng duy nhất theo thời gian thực
-      const timestamp = Date.now().toString().slice(-4);
-      const generatedOrderCode = `SL-${new Date().getFullYear()}${String(
-        new Date().getMonth() + 1
-      ).padStart(2, '0')}-${timestamp}`;
+      // Tạo mã đơn hàng duy nhất theo thời gian thực (SL-YYYYMM-XXXX)
+      const randomPart = Math.floor(1000 + Math.random() * 9000);
+      const yearMonth = `${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+      const generatedOrderCode = `SL-${yearMonth}-${randomPart}`;
 
       const orderItems: OrderItem[] = items.map((item) => ({
         productId: item.product.id,
@@ -86,8 +97,27 @@ export default function CheckoutModal({
         quantity: item.quantity,
       }));
 
+      // 1. Ghi đơn hàng vào kho Supabase (bảng orders và order_items)
+      const supaResult = await createOrderInSupabase({
+        orderCode: generatedOrderCode,
+        customerName: customerName.trim(),
+        customerPhone: cleanPhone,
+        customerEmail: customerEmail.trim() || undefined,
+        shippingAddress: shippingAddress.trim(),
+        customerNote: customerNote.trim() || undefined,
+        orderType,
+        paymentMethod,
+        totalAmount,
+        items: orderItems,
+      });
+
+      if (!supaResult.success) {
+        console.warn('Lỗi ghi Supabase, lưu dự phòng offline:', supaResult.error);
+      }
+
+      // 2. Lưu bản sao vào bộ nhớ cục bộ
       const newOrder: Order = {
-        id: `ord-${Date.now()}`,
+        id: supaResult.orderId || `ord-${Date.now()}`,
         orderCode: generatedOrderCode,
         customerName: customerName.trim(),
         customerPhone: cleanPhone,
@@ -102,15 +132,15 @@ export default function CheckoutModal({
         createdAt: new Date().toISOString(),
       };
 
-      // Lưu đơn hàng vào cơ sở lưu trữ bền vững
       saveNewOrder(newOrder);
 
-      // Xóa giỏ hàng
+      // 3. Xóa giỏ hàng và mở thông báo thành công
       clearCart();
       setIsSubmitting(false);
       onClose();
       onOrderSuccess(generatedOrderCode);
-    } catch {
+    } catch (err: any) {
+      console.error('Lỗi khi gửi đơn hàng:', err);
       setErrorMsg('Đã có lỗi xảy ra khi lưu đơn hàng. Vui lòng thử lại.');
       setIsSubmitting(false);
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HeroBanner from '@/components/HeroBanner';
@@ -11,7 +11,7 @@ import ProductDetailModal from '@/components/ProductDetailModal';
 import CartDrawer from '@/components/CartDrawer';
 import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
-import { getStoredProducts } from '@/lib/storage';
+import { getProductsFromSupabase, getCategoriesFromSupabase, CategoryData } from '@/lib/supabaseProducts';
 import { Product, FilterState } from '@/types';
 import { 
   Sun, 
@@ -19,17 +19,48 @@ import {
   BatteryCharging, 
   Droplets, 
   Award,
-  SearchX
+  SearchX,
+  Loader2
 } from 'lucide-react';
 
 export default function Home() {
-  const [products] = useState<Product[]>(getStoredProducts());
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<FilterState>({
     category: 'all',
     powerRange: 'all',
     priceSort: 'default',
     searchQuery: '',
   });
+
+  // Tải dữ liệu thời gian thực từ Supabase
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchStoreData() {
+      try {
+        const [supabaseProducts, supabaseCategories] = await Promise.all([
+          getProductsFromSupabase(),
+          getCategoriesFromSupabase(),
+        ]);
+        if (isMounted) {
+          setProducts(supabaseProducts);
+          setCategories(supabaseCategories);
+          setIsLoading(false);
+        }
+      } catch (err) {
+        console.error('Lỗi kết nối Supabase:', err);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchStoreData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Modal States
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -135,10 +166,17 @@ export default function Home() {
           onChangeFilter={handleFilterChange}
           onReset={handleResetFilter}
           totalResults={filteredProducts.length}
+          categories={categories}
         />
 
         {/* Products Grid */}
-        {filteredProducts.length === 0 ? (
+        {isLoading ? (
+          /* Loading State */
+          <div className="py-24 text-center space-y-4">
+            <Loader2 className="w-10 h-10 text-emerald-400 animate-spin mx-auto" />
+            <p className="text-sm text-slate-400">Đang tải sản phẩm từ kho Supabase...</p>
+          </div>
+        ) : filteredProducts.length === 0 ? (
           /* Empty State */
           <div className="p-16 rounded-3xl bg-[#132226] border border-[#26434b] text-center space-y-4 max-w-xl mx-auto">
             <div className="w-16 h-16 rounded-full bg-[#1c3137] text-slate-500 mx-auto flex items-center justify-center">

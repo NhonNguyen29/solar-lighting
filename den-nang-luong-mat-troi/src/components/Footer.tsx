@@ -109,34 +109,34 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 text-xs">
               <li>
-                <a href="#products-section" className="hover:text-emerald-400 transition-colors">
+                <Link href="/san-pham" className="hover:text-emerald-400 transition-colors">
                   Đèn Đường Liền Thể 300W - 500W
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#products-section" className="hover:text-emerald-400 transition-colors">
+                <Link href="/san-pham" className="hover:text-emerald-400 transition-colors">
                   Đèn Đường Tấm Pin Rời Công Trình
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#products-section" className="hover:text-emerald-400 transition-colors">
+                <Link href="/san-pham" className="hover:text-emerald-400 transition-colors">
                   Đèn Pha Sân Bãi & Biển Hiệu 200W - 500W
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#products-section" className="hover:text-emerald-400 transition-colors">
+                <Link href="/san-pham" className="hover:text-emerald-400 transition-colors">
                   Đèn Trụ Cổng Biệt Thự & Tường Rào
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#products-section" className="hover:text-emerald-400 transition-colors">
+                <Link href="/san-pham" className="hover:text-emerald-400 transition-colors">
                   Đèn Cắm Cỏ Sân Vườn Resort
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#products-section" className="hover:text-emerald-400 transition-colors">
+                <Link href="/san-pham" className="hover:text-emerald-400 transition-colors">
                   Đèn Ốp Trần Trong Nhà Dân Dụng
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

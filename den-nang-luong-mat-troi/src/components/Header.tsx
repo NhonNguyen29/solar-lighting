@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { 
   Sun, 
   ShoppingBag, 
@@ -11,7 +12,10 @@ import {
   X, 
   ShieldCheck, 
   Zap, 
-  UserCheck
+  UserCheck,
+  User,
+  LogIn,
+  LogOut
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -20,6 +24,7 @@ interface HeaderProps {
 
 export default function Header({ onOpenCart }: HeaderProps) {
   const { totalItems, setIsCartOpen } = useCart();
+  const { user, profile, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleCartClick = () => {
@@ -32,7 +37,7 @@ export default function Header({ onOpenCart }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 w-full glass-header">
-      {/* Top Bar Cảnh Báo Cam Kết */}
+      {/* Top Bar Cảnh Báo Cam Kết & Auth Bar */}
       <div className="bg-gradient-to-r from-emerald-950 via-[#132226] to-amber-950/80 px-4 py-1.5 text-xs text-slate-300 border-b border-[#26434b]/60">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -46,12 +51,57 @@ export default function Header({ onOpenCart }: HeaderProps) {
               Đổi Mới 1-1 Trong 30 Ngày
             </span>
           </div>
-          <div className="flex items-center gap-4">
+
+          {/* User Auth Info or Login/Register Links */}
+          <div className="flex items-center gap-3">
+            {user ? (
+              <div className="flex items-center gap-2.5">
+                <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                  <User className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Xin chào,</span>{' '}
+                  <strong className="text-white">{profile?.fullName || user.email?.split('@')[0]}</strong>
+                </span>
+                <span className="text-slate-600">|</span>
+                <button
+                  onClick={() => signOut()}
+                  className="flex items-center gap-1 text-slate-400 hover:text-rose-400 transition-colors"
+                  title="Đăng xuất tài khoản"
+                >
+                  <LogOut className="w-3 h-3" />
+                  <span className="hidden sm:inline">Đăng Xuất</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2.5">
+                <Link 
+                  href="/dang-nhap" 
+                  className="flex items-center gap-1 text-slate-300 hover:text-emerald-400 font-medium transition-colors"
+                >
+                  <LogIn className="w-3.5 h-3.5 text-emerald-400" /> Đăng Nhập
+                </Link>
+                <span className="text-slate-600">|</span>
+                <Link 
+                  href="/dang-ky" 
+                  className="text-amber-400 hover:text-amber-300 font-medium transition-colors"
+                >
+                  Đăng Ký
+                </Link>
+              </div>
+            )}
+
+            <span className="text-slate-600 hidden sm:inline">|</span>
             <Link 
               href="/admin" 
-              className="flex items-center gap-1 text-slate-400 hover:text-emerald-400 transition-colors"
+              className={`flex items-center gap-1 transition-all ${
+                profile?.role === 'admin' 
+                  ? 'text-emerald-400 hover:text-emerald-300 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30 text-[11px]'
+                  : 'text-slate-400 hover:text-emerald-400'
+              }`}
             >
-              <UserCheck className="w-3.5 h-3.5" /> Quản Trị Cửa Hàng
+              <UserCheck className="w-3.5 h-3.5" /> Quản Trị
+              {profile?.role === 'admin' && (
+                <span className="text-[9px] bg-emerald-500 text-slate-950 font-black px-1 rounded ml-0.5">ADMIN</span>
+              )}
             </Link>
           </div>
         </div>
@@ -86,9 +136,9 @@ export default function Header({ onOpenCart }: HeaderProps) {
           <Link href="/" className="hover:text-emerald-400 transition-colors">
             Trang Chủ
           </Link>
-          <a href="#products-section" className="hover:text-emerald-400 transition-colors">
+          <Link href="/san-pham" className="hover:text-emerald-400 transition-colors">
             Sản Phẩm Đèn
-          </a>
+          </Link>
           <a href="#calculator-section" className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
             <Zap className="w-4 h-4 text-amber-400" />
             Tính Tiết Kiệm Điện
@@ -102,11 +152,11 @@ export default function Header({ onOpenCart }: HeaderProps) {
         </nav>
 
         {/* Right CTA Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           {/* Hotline Quick Call */}
           <a
             href="tel:0988225888"
-            className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1c3137]/80 hover:bg-[#26434b] text-slate-200 border border-[#26434b] transition-all hover:border-emerald-500/40 text-xs font-semibold"
+            className="hidden lg:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1c3137]/80 hover:bg-[#26434b] text-slate-200 border border-[#26434b] transition-all hover:border-emerald-500/40 text-xs font-semibold"
           >
             <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
               <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
@@ -116,6 +166,59 @@ export default function Header({ onOpenCart }: HeaderProps) {
               <span className="text-emerald-400 font-bold">0988.225.888</span>
             </div>
           </a>
+
+          {/* User Account Button (Desktop) */}
+          {user ? (
+            <div className="relative group hidden sm:block">
+              <button 
+                type="button"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#1c3137] hover:bg-[#26434b] border border-[#26434b] text-slate-200 transition-all text-xs font-semibold hover:border-emerald-500/40"
+              >
+                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-extrabold flex items-center justify-center text-xs">
+                  {(profile?.fullName || user.email || 'U')[0].toUpperCase()}
+                </div>
+                <span className="text-white max-w-[110px] truncate">
+                  {profile?.fullName || user.email?.split('@')[0]}
+                </span>
+              </button>
+
+              {/* Dropdown Menu */}
+              <div className="absolute right-0 top-full pt-1.5 w-52 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all z-50">
+                <div className="rounded-2xl bg-[#132226] border border-[#26434b] shadow-2xl p-2 space-y-1">
+                  <div className="px-3 py-2 border-b border-[#26434b] mb-1">
+                    <p className="text-xs font-bold text-white truncate">{profile?.fullName}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
+                  </div>
+                  <Link
+                    href="/san-pham"
+                    className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:bg-[#1c3137] rounded-xl hover:text-white transition-colors"
+                  >
+                    <Sun className="w-3.5 h-3.5 text-amber-400" /> Mua sắm đèn
+                  </Link>
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-3 py-2 text-xs text-slate-300 hover:bg-[#1c3137] rounded-xl hover:text-white transition-colors"
+                  >
+                    <UserCheck className="w-3.5 h-3.5 text-emerald-400" /> Quản trị cửa hàng
+                  </Link>
+                  <button
+                    onClick={() => signOut()}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors text-left font-medium"
+                  >
+                    <LogOut className="w-3.5 h-3.5" /> Đăng Xuất
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Link
+              href="/dang-nhap"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#1c3137] hover:bg-[#26434b] border border-[#26434b] text-slate-200 text-xs font-semibold hover:border-emerald-500/40 transition-all"
+            >
+              <User className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Đăng Nhập</span>
+            </Link>
+          )}
 
           {/* Cart Button with Count Badge */}
           <button
@@ -146,6 +249,47 @@ export default function Header({ onOpenCart }: HeaderProps) {
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-[#26434b] bg-[#0b1315]/98 px-6 py-6 space-y-4">
+          {/* Mobile Auth Bar */}
+          {user ? (
+            <div className="p-3.5 rounded-2xl bg-[#132226] border border-[#26434b] space-y-2.5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 font-extrabold text-sm flex items-center justify-center">
+                  {(profile?.fullName || user.email || 'U')[0].toUpperCase()}
+                </div>
+                <div className="overflow-hidden">
+                  <p className="text-xs font-bold text-white truncate">{profile?.fullName}</p>
+                  <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  signOut();
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold flex items-center justify-center gap-1.5"
+              >
+                <LogOut className="w-3.5 h-3.5" /> Đăng Xuất Tài Khoản
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/dang-nhap"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold text-center"
+              >
+                Đăng Nhập
+              </Link>
+              <Link
+                href="/dang-ky"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2.5 rounded-xl bg-[#1c3137] border border-[#26434b] text-slate-200 text-xs font-bold text-center"
+              >
+                Đăng Ký
+              </Link>
+            </div>
+          )}
+
           <Link
             href="/"
             onClick={() => setMobileMenuOpen(false)}
@@ -153,13 +297,13 @@ export default function Header({ onOpenCart }: HeaderProps) {
           >
             Trang Chủ
           </Link>
-          <a
-            href="#products-section"
+          <Link
+            href="/san-pham"
             onClick={() => setMobileMenuOpen(false)}
             className="block text-base font-semibold text-slate-200 hover:text-emerald-400"
           >
             Sản Phẩm Đèn Solar
-          </a>
+          </Link>
           <a
             href="#calculator-section"
             onClick={() => setMobileMenuOpen(false)}
